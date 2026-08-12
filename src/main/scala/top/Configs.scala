@@ -271,6 +271,7 @@ class MinimalMatrixConfig(n: Int) extends Config(
         TRLEN = 64 * 8,
         MELEN = 32,
         MatrixExtension = MatrixIsaParams(
+          enableInt2Int8Int32 = true,
           enableInt8Int32 = true,
           enableFp8Fp32 = true,
           enableFp8Fp16 = true,
@@ -537,6 +538,7 @@ class DefaultMatrixConfig(n: Int = 1) extends Config(
         TRLEN = 64 * 8,
         MELEN = 32,
         MatrixExtension = MatrixIsaParams(
+          enableInt2Int8Int32 = true,
           enableInt8Int32 = true,
           enableFp8Fp32 = true,
           enableFp8Fp16 = true,

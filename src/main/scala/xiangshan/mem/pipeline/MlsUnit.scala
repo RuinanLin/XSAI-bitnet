@@ -231,12 +231,14 @@ class MlsUnit(implicit p: Parameters) extends XSModule
   val s0_mcfgTypeCode = s0_mcfgEntry.typeCode
   val s0_mcfgWidth = McfgHelpers.msew(s0_mcfgTypeCode)
   val s0_arlenElems = Mux1H(Seq(
+    (s0_mcfgWidth === MSew.e2)  -> (ARLEN / 2).U,
     (s0_mcfgWidth === MSew.e4)  -> (ARLEN / 4).U,
     (s0_mcfgWidth === MSew.e8)  -> (ARLEN / 8).U,
     (s0_mcfgWidth === MSew.e16) -> (ARLEN / 16).U,
     (s0_mcfgWidth === MSew.e32) -> (ARLEN / 32).U,
   ))
   val s0_trlenElems = Mux1H(Seq(
+    (s0_mcfgWidth === MSew.e2)  -> (coreParams.TRLEN / 2).U,
     (s0_mcfgWidth === MSew.e4)  -> (coreParams.TRLEN / 4).U,
     (s0_mcfgWidth === MSew.e8)  -> (coreParams.TRLEN / 8).U,
     (s0_mcfgWidth === MSew.e16) -> (coreParams.TRLEN / 16).U,

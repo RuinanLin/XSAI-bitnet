@@ -36,6 +36,7 @@ class Mma(cfg: FuConfig)(implicit p: Parameters) extends PipedFuncUnit(cfg) {
 
   private def elementLimit(totalBits: Int, typeCode: UInt): UInt =
     MuxLookup(McfgHelpers.elementWidth(typeCode), 0.U)(Seq(
+      2.U -> (totalBits / 2).U,
       4.U -> (totalBits / 4).U,
       8.U -> (totalBits / 8).U,
       16.U -> (totalBits / 16).U,

@@ -16,9 +16,10 @@ object Bundles {
     def e16 : UInt = "b001".U(width.W)
     def e32 : UInt = "b010".U(width.W)
     def e64 : UInt = "b011".U(width.W)
+    def e2  : UInt = "b100".U(width.W)
     def e4  : UInt = "b111".U(width.W)
 
-    def reserved = Seq(BitPat("b100"), BitPat("b101"), BitPat("b110"))
+    def reserved = Seq(BitPat("b101"), BitPat("b110"))
 
     def isReserved(sew: UInt) : Bool = {
       require(sew.getWidth >= 2 && sew.getWidth <= 3)
@@ -35,6 +36,7 @@ object Bundles {
     def e16 : UInt = "b00000010".U(width.W)
     def e32 : UInt = "b00000100".U(width.W)
     def e64 : UInt = "b00001000".U(width.W)
+    def e2  : UInt = "b00010000".U(width.W)
     def e4  : UInt = "b10000000".U(width.W)
 
     def convertFromMSew(msew: UInt): UInt = {

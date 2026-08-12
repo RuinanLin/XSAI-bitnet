@@ -51,6 +51,8 @@ object McfgHelpers {
 
   case object Fp32 extends McfgSemanticType(12, "fp32", 32, McfgFloat, fpPayload(isAlt = false, WidthE32))
 
+  case object Fp2Pack4 extends McfgSemanticType(13, "fp2pack4", 2, McfgInt, 5)
+
   case class McfgDecoded(typeCode: Int, tableSel: Int, semanticType: Option[McfgSemanticType]) {
     def legal: Boolean = semanticType.isDefined
     def typeName: Option[String] = semanticType.map(_.typeName)
@@ -78,7 +80,8 @@ object McfgHelpers {
     Fp16,
     Bf16,
     Tf32,
-    Fp32
+    Fp32,
+    Fp2Pack4
   )
 
   private val semanticTypesByCode: Map[Int, McfgSemanticType] = semanticTypes.map(t => t.typeCode -> t).toMap
@@ -121,6 +124,7 @@ object McfgHelpers {
 
   def msew(typeCode: UInt): UInt = {
     MuxLookup(elementWidth(typeCode), MSew.e8)(Seq(
+      2.U  -> MSew.e2,
       4.U  -> MSew.e4,
       8.U  -> MSew.e8,
       16.U -> MSew.e16,
@@ -135,6 +139,7 @@ object McfgHelpers {
     matrixExtension: MatrixIsaParams
   ): Boolean = {
     val supportsInt8 = matrixExtension.enableInt8Int32 && cType == Int32 && isInt8Type(aType) && isInt8Type(bType)
+    val supportsInt2 = matrixExtension.enableInt2Int8Int32 && cType == Int32 && aType == Fp2Pack4 && bType == Int8
     val supportsInt4 = matrixExtension.enableInt4Int32 && cType == Int32 && isInt4Type(aType) && isInt4Type(bType)
     val supportsFp8Fp16 = matrixExtension.enableFp8Fp16 && cType == Fp16 && sameFp8Type(aType, bType)
     val supportsFp8Bf16 = matrixExtension.enableFp8Bf16 && cType == Bf16 && sameFp8Type(aType, bType)
@@ -145,7 +150,7 @@ object McfgHelpers {
     val supportsTf32Fp32 = matrixExtension.enableTf32Fp32 && aType == Tf32 && bType == Tf32 && cType == Fp32
     val supportsFp32Fp32 = matrixExtension.enableFp32Fp32 && aType == Fp32 && bType == Fp32 && cType == Fp32
 
-    supportsInt8 || supportsInt4 || supportsFp8Fp16 || supportsFp8Bf16 || supportsFp8Fp32 ||
+    supportsInt8 || supportsInt2 || supportsInt4 || supportsFp8Fp16 || supportsFp8Bf16 || supportsFp8Fp32 ||
       supportsFp16Fp16 || supportsFp16Fp32 || supportsBf16Fp32 || supportsTf32Fp32 || supportsFp32Fp32
   }
 
@@ -165,6 +170,7 @@ object McfgHelpers {
   ): Bool = {
     val supported = Seq(
       Option.when(matrixExtension.enableInt8Int32)(isInt8Type(aTypeCode) && isInt8Type(bTypeCode) && cTypeCode === Int32.typeCode.U),
+      Option.when(matrixExtension.enableInt2Int8Int32)(aTypeCode === Fp2Pack4.typeCode.U && bTypeCode === Int8.typeCode.U && cTypeCode === Int32.typeCode.U),
       Option.when(matrixExtension.enableInt4Int32)(isInt4Type(aTypeCode) && isInt4Type(bTypeCode) && cTypeCode === Int32.typeCode.U),
       Option.when(matrixExtension.enableFp8Fp16)(sameFp8Type(aTypeCode, bTypeCode) && cTypeCode === Fp16.typeCode.U),
       Option.when(matrixExtension.enableFp8Bf16)(sameFp8Type(aTypeCode, bTypeCode) && cTypeCode === Bf16.typeCode.U),
